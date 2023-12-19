@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todos</title>
+</head>
+<body>
+    <h1>Todos (no localStorage version)</h1>
+    <form action="#" id="idForm">
+        <label for="idInput">Task: </label><!--for= must match input id-->
+        <input type="text" name="task" id="idInput" autofocus>
+        <input type="submit" value="Add">
+    </form>
+    <ol id="idList"></ol>
+    
+    <script>
+document.addEventListener("DOMContentLoaded",()=>{
+  let eleForm = document.getElementById("idForm")
+  let eleOL = document.getElementById("idList")
+  
+  eleForm.addEventListener("submit",evt=>{
+    evt.preventDefault()
+
+    let newLi = document.createElement("li")
+    newLi.innerText = document.getElementById("idInput").value
+
+    let newButton = document.createElement("button")
+    newButton.innerText = "Remove"
+
+    eleOL.appendChild(newLi)
+    newLi.appendChild(newButton)
+
+    eleForm.reset()
+  })
+
+  eleOL.addEventListener("click",evt=>{
+    const tag = evt.target.tagName.toLowerCase()
+    if (tag === "li"){
+      if(evt.target.style.textDecoration === "line-through"){
+        evt.target.style.textDecoration = "none"
+        evt.target.style.color = "black"
+      }
+      else {
+        evt.target.style.textDecoration = "line-through"
+        evt.target.style.color = "red"
+      }
+    } 
+    else if (tag === "button") evt.target.parentNode.remove()
+  })
+})      
+    </script>
+</body>
+</html>
+

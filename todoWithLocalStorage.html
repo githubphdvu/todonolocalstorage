@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Todos</title>
+</head>
+<body>
+    <h1>Todos (with localStorage version)</h1>
+    <form action="#" id="idForm">
+        <label for="idInput">Task: </label>
+        <input type="text" name="task" id="idInput" autofocus>
+        <input type="submit" value="Add">
+    </form>
+    <ol id="idList"></ol>
+
+    <script>
+const eleForm = document.getElementById("idForm")
+const eleOL = document.getElementById("idList")
+let A = JSON.parse(localStorage.getItem("storage")) || []//load from localStorage 'storage' into array A
+
+function updateLocalStorage(){ localStorage.setItem("storage", JSON.stringify(A)) }
+function createTaskElement(taskObj) {
+  const newLi = document.createElement("li")
+  newLi.dataset.taskId = taskObj.id
+  newLi.innerText = taskObj.task
+  if (taskObj.isCompleted) newLi.style.textDecoration = "line-through"
+  
+  const newButton = document.createElement("button")
+  newButton.innerText = "Remove"
+  newButton.addEventListener("click", ()=>removeTask(taskObj.id))
+  newLi.appendChild(newButton)
+  return newLi
+}
+function addTaskToList(taskObj) {
+  const newLi = createTaskElement(taskObj)
+  eleOL.appendChild(newLi)
+}
+function removeTask(taskID) {
+  A = A.filter(a => a.id !== taskID)
+  updateLocalStorage()
+  renderTasks()
+}
+function renderTasks() {
+  eleOL.innerHTML = ""//Clear existing list
+  A.forEach(a=>addTaskToList(a))
+}
+renderTasks()//Load tasks from localStorage on page load
+eleForm.addEventListener("submit", evt => {
+  evt.preventDefault()
+  const eleInput = document.getElementById("idInput")
+  const taskText = eleInput.value
+  if (taskText !== "") {
+    const newTask = {
+      id: Date.now().toString(),//Unique ID using timestamp(you might use a better unique ID generator)
+      task: taskText,
+      isCompleted: false
+    }
+    A.push(newTask)
+    updateLocalStorage()
+    renderTasks()
+    eleInput.value = ""
+  }
+})
+eleOL.addEventListener("click", evt => {
+  const taskID = evt.target.dataset.taskId
+  const taskElement = document.querySelector(`[data-task-id="${taskID}"]`)
+  if (taskID && taskElement) {
+    const i = A.findIndex(task => task.id === taskID)
+    A[i].isCompleted = !A[i].isCompleted
+    taskElement.style.textDecoration = A[i].isCompleted ? "line-through" : "none"
+    updateLocalStorage()
+  }
+})
+    </script>
+</body>
+</html>
